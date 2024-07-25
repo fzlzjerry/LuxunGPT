@@ -1,10 +1,10 @@
-import os
 import random
 import numpy as np
 import torch
-from transformers import GPT2LMHeadModel, GPT2Tokenizer, Trainer, TrainingArguments, DataCollatorForLanguageModeling, EarlyStoppingCallback
+from transformers import LlamaForCausalLM, LlamaTokenizer, Trainer, TrainingArguments, DataCollatorForLanguageModeling, EarlyStoppingCallback
 from datasets import Dataset
 import pickle
+import os
 
 # 设置随机种子
 def set_seed(seed):
@@ -16,9 +16,9 @@ def set_seed(seed):
 set_seed(42)
 
 # 加载模型和分词器
-model_name = 'gpt2-xl'
-model = GPT2LMHeadModel.from_pretrained(model_name)
-tokenizer = GPT2Tokenizer.from_pretrained(model_name)
+model_name = 'llama3.1-3b'  # 替换成Llama 3.1: 8B模型的名称
+model = LlamaForCausalLM.from_pretrained(model_name)
+tokenizer = LlamaTokenizer.from_pretrained(model_name)
 
 # 加载二进制数据
 def load_bin_data(path):
@@ -26,8 +26,14 @@ def load_bin_data(path):
         data = pickle.load(f)
     return Dataset.from_dict(data)
 
-train_data = load_bin_data('/mnt/data/train.bin')
-val_data = load_bin_data('/mnt/data/val.bin')
+train_data_path = '/mnt/data/train.bin'
+val_data_path = '/mnt/data/val.bin'
+
+if os.path.exists(train_data_path) and os.path.exists(val_data_path):
+    train_data = load_bin_data(train_data_path)
+    val_data = load_bin_data(val_data_path)
+else:
+    raise FileNotFoundError("训练或验证数据文件不存在。")
 
 # 数据整理器
 collator = DataCollatorForLanguageModeling(tokenizer=tokenizer, mlm=False)
