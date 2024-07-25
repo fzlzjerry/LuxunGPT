@@ -16,7 +16,7 @@ def set_seed(seed):
 set_seed(42)
 
 # 加载模型和分词器
-model_name = 'llama3.1-3b'  # 替换成Llama 3.1: 8B模型的名称
+model_name = 'llama3.1-8b'  # 替换成Llama 3.1: 8B模型的名称
 model = LlamaForCausalLM.from_pretrained(model_name)
 tokenizer = LlamaTokenizer.from_pretrained(model_name)
 
